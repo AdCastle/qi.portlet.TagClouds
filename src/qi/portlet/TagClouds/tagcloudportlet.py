@@ -9,7 +9,6 @@ from zope.component import getMultiAdapter
 from plone.portlets.interfaces import IPortletDataProvider
 from plone.app.portlets.portlets import base
 from plone.app.vocabularies.catalog import SearchableTextSourceBinder
-from plone.app.form.widgets.uberselectionwidget import UberSelectionWidget
 from plone.app.layout.navigation.root import getNavigationRoot
 from plone.memoize import ram
 
@@ -273,7 +272,6 @@ class AddForm(base.AddForm):
     """
 
     form_fields = form.Fields(ITagCloudPortlet)
-    form_fields['root'].custom_widget = UberSelectionWidget
 
     def create(self, data):
         """
@@ -285,7 +283,6 @@ class EditForm(base.EditForm):
     """
     """
     form_fields = form.Fields(ITagCloudPortlet)
-    form_fields['root'].custom_widget = UberSelectionWidget
 
     def __call__(self):
         subjectFields = ['restrictSubjects', 'filterSubjects']
