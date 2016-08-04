@@ -2,7 +2,6 @@ from time import time
 from operator import itemgetter
 from zope.interface import implements
 from zope import schema
-from zope.formlib import form
 from zope.i18n import translate
 from zope.component import getMultiAdapter
 
@@ -271,7 +270,7 @@ class AddForm(base.AddForm):
     """
     """
 
-    form_fields = form.Fields(ITagCloudPortlet)
+    schema = ITagCloudPortlet
 
     def create(self, data):
         """
@@ -282,16 +281,4 @@ class AddForm(base.AddForm):
 class EditForm(base.EditForm):
     """
     """
-    form_fields = form.Fields(ITagCloudPortlet)
-
-    def __call__(self):
-        subjectFields = ['restrictSubjects', 'filterSubjects']
-        for fieldname in subjectFields:
-            field = self.form_fields.get(fieldname).field
-            existing = field.get(self.context)
-            subject_vocab = SubjectsVocabularyFactory(self.context)
-            all_subjects = set([t.title for t in subject_vocab])
-            valid = all_subjects.intersection(existing)
-            if not valid == set(existing):
-                field.set(self.context, list(valid))
-        return super(EditForm, self).__call__()
+    schema = ITagCloudPortlet
