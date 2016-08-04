@@ -17,6 +17,7 @@ from Products.PythonScripts.standard import url_quote
 
 from qi.portlet.TagClouds.vocabularies import SubjectsVocabularyFactory
 from qi.portlet.TagClouds import TagCloudPortletMessageFactory as _
+from plone.app.vocabularies.catalog import CatalogSource
 
 
 def _cachekey(method, self):
@@ -91,8 +92,9 @@ class ITagCloudPortlet(IPortletDataProvider):
                           "to act as the root of the navigation tree. " \
                           "Leave blank to use the Plone site root."),
             required=False,
-            source=SearchableTextSourceBinder({'is_folderish': True},
-                                              default_query='path:'))
+            source=CatalogSource(is_folderish=True)
+    )
+    
     wfStates = schema.List(
             required = True,
             title = _(u"Workflow states to show"),
