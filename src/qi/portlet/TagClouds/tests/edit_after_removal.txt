@@ -7,6 +7,9 @@ Here we kick off the ZOPE test browser package.
 
     >>> app = layer['app']
     >>> portal = layer['portal']
+    >>> from plone.testing.z2 import Browser
+    >>> browser = Browser(app)
+    >>> browser.handleErrors = False
     >>> portal_url = portal.absolute_url()
     >>> portal_url
     'http://nohost/plone'
@@ -20,19 +23,25 @@ Now we log in to the site to set up the content type
     >>> from plone.app.testing import TEST_USER_PASSWORD
     >>> from plone.app.testing import SITE_OWNER_NAME
     >>> from plone.app.testing import SITE_OWNER_PASSWORD
+    >>> from plone.app.testing import setRoles
 
-Use the login page instead of the login portlet (which may be inactive):
+Lets create a page and add a subject
 
-    >>> from plone.testing.z2 import Browser
-    >>> browser = Browser(app)
+    >>> from zope.component import getUtility
+    >>> from plone.portlets.interfaces import IPortletType
+
     >>> browser.open(portal_url + '/login')
     >>> browser.getControl(name='__ac_name').value = SITE_OWNER_NAME
     >>> browser.getControl(name='__ac_password').value = SITE_OWNER_PASSWORD
     >>> browser.getControl(name='submit').click()
+    >>> "You are now logged in" in browser.contents
+    True
 
-    >>> from zope.component import getUtility
-    >>> from plone.portlets.interfaces import IPortletType
-    >>> removemeid = portal.invokeFactory('Document','removeme')
+    >>> browser.open('http://nohost/plone/++add++Document')
+    >>> browser.getControl(name='form.widgets.IDublinCore.title').value = 'removeme'
+    >>> browser.getControl(name='form.widgets.IDublinCore.subjects').value = ['toremove']
+    >>> form = browser.getForm("form")
+    >>> form.submit()
     >>> portal.removeme.editMetadata(subject=['toremove'])
     >>> portal.portal_workflow.doActionFor(portal.removeme, 'publish')
     >>> portlet = getUtility(IPortletType, name='qi.portlet.TagClouds.TagCloudPortlet')
@@ -40,11 +49,11 @@ Use the login page instead of the login portlet (which may be inactive):
     >>> mapping = portal.restrictedTraverse('++contextportlets++plone.leftcolumn')
     >>> addview = mapping.restrictedTraverse('+/' + portlet.addview)
     >>> addview.createAndAdd(data={'restrictSubjects':['toremove'],'refreshInterval':1})
-    
+
     >>> browser.open("http://nohost/plone")
     >>> browser.contents
     '...toremove...'
-    >>> del portal[removemeid]
+    >>> del portal['removeme']
     >>> browser.open('http://nohost/plone/++contextportlets++plone.leftcolumn/tag-cloud-portlet/edit')
     >>> 'toremove' not in browser.contents
     True

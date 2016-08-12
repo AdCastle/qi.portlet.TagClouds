@@ -19,6 +19,7 @@ class TagCloudLayer(PloneSandboxLayer):
         xmlconfig.file('configure.zcml',
                        qi.portlet.TagClouds,
                        context=configurationContext)
+        self.loadZCML(package=qi.portlet.TagClouds)
         z2.installProduct(app, 'qi.portlet.TagClouds')
         import plone.app.dexterity
         self.loadZCML(package=plone.app.dexterity)
@@ -26,6 +27,7 @@ class TagCloudLayer(PloneSandboxLayer):
     def setUpPloneSite(self, portal):
         applyProfile(portal, 'Products.CMFPlone:plone')
         applyProfile(portal, 'plone.app.contenttypes:default')
+        applyProfile(portal, 'qi.portlet.TagClouds:default')
         acl_users = getToolByName(portal, 'acl_users')
         acl_users.userFolderAddUser(
             'contributor',
