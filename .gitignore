@@ -10,3 +10,4 @@ include/
 lib/
 local/
 dist/
+.idea
