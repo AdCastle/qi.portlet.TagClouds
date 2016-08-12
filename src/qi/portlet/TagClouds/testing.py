@@ -4,6 +4,7 @@ from plone.app.testing import IntegrationTesting
 from plone.app.testing import FunctionalTesting
 from plone.app.testing import applyProfile
 from plone.testing import z2
+from Products.CMFCore.utils import getToolByName
 
 from zope.configuration import xmlconfig
 
@@ -19,9 +20,23 @@ class TagCloudLayer(PloneSandboxLayer):
                        qi.portlet.TagClouds,
                        context=configurationContext)
         z2.installProduct(app, 'qi.portlet.TagClouds')
+        import plone.app.dexterity
+        self.loadZCML(package=plone.app.dexterity)
 
     def setUpPloneSite(self, portal):
         applyProfile(portal, 'Products.CMFPlone:plone')
+        applyProfile(portal, 'plone.app.contenttypes:default')
+        acl_users = getToolByName(portal, 'acl_users')
+        acl_users.userFolderAddUser(
+            'contributor',
+            'secret',
+            ['Member', 'Contributor'],
+            []
+        )
+
+    def tearDownZope(self, app):
+        z2.uninstallProduct(app, 'qi.portlet.TagClouds')
+
 
 TAGCLOUD_FIXTURE = TagCloudLayer()
 TAGCLOUD_INTEGRATION_TESTING = \

@@ -2,10 +2,20 @@ from zope.component import getUtility, getMultiAdapter
 from plone.portlets.interfaces import IPortletManager
 from plone.portlets.interfaces import IPortletRenderer
 from qi.portlet.TagClouds import tagcloudportlet
-from qi.portlet.TagClouds.tests.base import TagCloudsTestCase
+from qi.portlet.TagClouds.testing import TAGCLOUD_FUNCTIONAL_TESTING
+import unittest
 
 
-class TestRenderer(TagCloudsTestCase):
+class TestRenderer(unittest.TestCase):
+
+    layer = TAGCLOUD_FUNCTIONAL_TESTING
+
+    def setUp(self):
+        self.app = self.layer['app']
+        self.portal = self.layer['portal']
+
+    def test_test(self):
+        self.assertTrue(True)
 
     def afterSetUp(self):
         """
@@ -47,7 +57,6 @@ class TestRenderer(TagCloudsTestCase):
         self.portal.invokeFactory('Document', 'private1')
         self.portal.private1.editMetadata(subject='adminprivate')
 
-
         # Add a private object tagged as "privatetag" created by a normal
         # #member
         self.login()
@@ -71,10 +80,10 @@ class TestRenderer(TagCloudsTestCase):
         self.loginAsPortalOwner()
         # Setup the portlet so that only one size is used.
         r = self.renderer(context=self.portal,
-            assignment=tagcloudportlet.Assignment(
-                levels=1,
-                wfStates=['published', 'private'],
-                ))
+                          assignment=tagcloudportlet.Assignment(
+                              levels=1,
+                              wfStates=['published', 'private'],
+                          ))
         r = r.__of__(self.portal)
         r.update()
         output = r.render()
@@ -84,10 +93,10 @@ class TestRenderer(TagCloudsTestCase):
         # Setup the portlet so that there can be
         # up to 3 different tag sizes.
         r = self.renderer(context=self.portal,
-            assignment=tagcloudportlet.Assignment(
-                levels=3,
-                wfStates=['published', 'private'],
-                ))
+                          assignment=tagcloudportlet.Assignment(
+                              levels=3,
+                              wfStates=['published', 'private'],
+                          ))
         r = r.__of__(self.portal)
         r.update()
         output = r.render()
@@ -102,10 +111,10 @@ class TestRenderer(TagCloudsTestCase):
         """
         self.loginAsPortalOwner()
         r = self.renderer(context=self.portal,
-            assignment=tagcloudportlet.Assignment(
-                count=2,
-                wfStates=['published', 'private'],
-                ))
+                          assignment=tagcloudportlet.Assignment(
+                              count=2,
+                              wfStates=['published', 'private'],
+                          ))
         r = r.__of__(self.portal)
         r.update()
         output = r.render()
@@ -120,10 +129,10 @@ class TestRenderer(TagCloudsTestCase):
         """
         self.loginAsPortalOwner()
         r = self.renderer(context=self.portal,
-            assignment=tagcloudportlet.Assignment(
-                restrictSubjects=['tag1', 'tag3'],
-                wfStates=['published', 'private'],
-                ))
+                          assignment=tagcloudportlet.Assignment(
+                              restrictSubjects=['tag1', 'tag3'],
+                              wfStates=['published', 'private'],
+                          ))
         r = r.__of__(self.portal)
         r.update()
         output = r.render()
@@ -139,10 +148,9 @@ class TestRenderer(TagCloudsTestCase):
         """
         self.loginAsPortalOwner()
         r = self.renderer(context=self.portal,
-            assignment=tagcloudportlet.Assignment(
-                filterSubjects=['commontag'],
-                wfStates=['published'],
-                ))
+                          assignment=tagcloudportlet.Assignment(
+                              filterSubjects=['commontag'],
+                              wfStates=['published'],))
         r = r.__of__(self.portal)
         r.update()
         output = r.render()
@@ -155,10 +163,10 @@ class TestRenderer(TagCloudsTestCase):
         """
         self.loginAsPortalOwner()
         r = self.renderer(context=self.portal,
-            assignment=tagcloudportlet.Assignment(
-                restrictTypes=['News Item'],
-                wfStates=['published', 'private'],
-                ))
+                          assignment=tagcloudportlet.Assignment(
+                              restrictTypes=['News Item'],
+                              wfStates=['published', 'private'],
+                          ))
         r = r.__of__(self.portal)
         r.update()
         output = r.render()
@@ -172,10 +180,10 @@ class TestRenderer(TagCloudsTestCase):
         """
         self.loginAsPortalOwner()
         r = self.renderer(context=self.portal,
-            assignment=tagcloudportlet.Assignment(
-                root = '/subfolder',
-                wfStates=['published', 'private'],
-                ))
+                          assignment=tagcloudportlet.Assignment(
+                              root='/subfolder',
+                              wfStates=['published', 'private'],
+                          ))
         r = r.__of__(self.portal)
         r.update()
         output = r.render()
@@ -191,9 +199,9 @@ class TestRenderer(TagCloudsTestCase):
         """
         self.loginAsPortalOwner()
         r = self.renderer(context=self.portal,
-            assignment=tagcloudportlet.Assignment(
-                wfStates=['published'],
-                ))
+                          assignment=tagcloudportlet.Assignment(
+                              wfStates=['published'],
+                          ))
         r = r.__of__(self.portal)
         r.update()
         output = r.render()
@@ -201,9 +209,9 @@ class TestRenderer(TagCloudsTestCase):
         self.failIf('memberprivate' in output)
 
         r = self.renderer(context=self.portal,
-            assignment=tagcloudportlet.Assignment(
-                wfStates=['private'],
-                ))
+                          assignment=tagcloudportlet.Assignment(
+                              wfStates=['private'],
+                          ))
         r = r.__of__(self.portal)
         r.update()
         output = r.render()
@@ -214,9 +222,9 @@ class TestRenderer(TagCloudsTestCase):
         # from other users.
         self.login()
         r = self.renderer(context=self.portal,
-            assignment=tagcloudportlet.Assignment(
-                wfStates=['private'],
-                ))
+                          assignment=tagcloudportlet.Assignment(
+                              wfStates=['private'],
+                          ))
         r = r.__of__(self.portal)
         r.update()
         output = r.render()
@@ -229,10 +237,10 @@ class TestRenderer(TagCloudsTestCase):
         """
         self.login()
         r = self.renderer(context=self.portal,
-            assignment=tagcloudportlet.Assignment(
-                wfStates=['private', 'published'],
-                restrictTypes=['News Item'],
-                root='/subfolder'))
+                          assignment=tagcloudportlet.Assignment(
+                              wfStates=['private', 'published'],
+                              restrictTypes=['News Item'],
+                              root='/subfolder'))
         r = r.__of__(self.portal)
         r.update()
         output = r.render()

@@ -10,10 +10,20 @@ from plone.app.portlets.storage import PortletAssignmentMapping
 
 from qi.portlet.TagClouds import tagcloudportlet
 
-from qi.portlet.TagClouds.tests.base import TagCloudsTestCase
+from qi.portlet.TagClouds.testing import TAGCLOUD_FUNCTIONAL_TESTING
+import unittest
 
 
-class TestPortlet(TagCloudsTestCase):
+class TestPortlet(unittest.TestCase):
+
+    layer = TAGCLOUD_FUNCTIONAL_TESTING
+
+    def setUp(self):
+        self.app = self.layer['app']
+        self.portal = self.layer['portal']
+
+    def test_test(self):
+        self.assertTrue(True)
 
     def afterSetUp(self):
         self.setRoles(('Manager', ))
