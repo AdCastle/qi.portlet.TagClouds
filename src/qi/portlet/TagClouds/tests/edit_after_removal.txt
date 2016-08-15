@@ -38,22 +38,24 @@ Lets create a page and add a subject
     True
 
     >>> browser.open('http://nohost/plone/++add++Document')
-    >>> browser.getControl(name='form.widgets.IDublinCore.title').value = 'removeme'
-    >>> browser.getControl(name='form.widgets.IDublinCore.subjects').value = ['toremove']
-    >>> form = browser.getForm("form")
-    >>> form.submit()
-    >>> portal.removeme.editMetadata(subject=['toremove'])
-    >>> portal.portal_workflow.doActionFor(portal.removeme, 'publish')
-    >>> portlet = getUtility(IPortletType, name='qi.portlet.TagClouds.TagCloudPortlet')
-    >>> request = portal.REQUEST
-    >>> mapping = portal.restrictedTraverse('++contextportlets++plone.leftcolumn')
-    >>> addview = mapping.restrictedTraverse('+/' + portlet.addview)
-    >>> addview.createAndAdd(data={'restrictSubjects':['toremove'],'refreshInterval':1})
+    >>> browser.getControl('Title').value = 'removeme'
+    >>> browser.getControl(name='form.widgets.IDublinCore.subjects').value = 'toremove'
+    >>> browser.getControl('Save').click()
+    >>> browser.url
+    'http://nohost/plone/removeme'
+
+    >>> browser.open('http://nohost/plone/++contextportlets++plone.leftcolumn/+/qi.portlet.TagClouds.TagCloudPortlet')
+    >>> browser.getControl('Save').click()
 
     >>> browser.open("http://nohost/plone")
     >>> browser.contents
     '...toremove...'
-    >>> del portal['removeme']
+
+Lets now remove the subject and it shouldn't be an option in the tag cloud editor.
+    >>> browser.open('http://nohost/plone/removeme/edit')
+    >>> browser.getControl(name='form.widgets.IDublinCore.subjects').value = ''
+    >>> browser.getControl('Save').click()
+
     >>> browser.open('http://nohost/plone/++contextportlets++plone.leftcolumn/tag-cloud-portlet/edit')
     >>> 'toremove' not in browser.contents
     True
