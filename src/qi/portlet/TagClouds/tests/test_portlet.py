@@ -12,6 +12,10 @@ from qi.portlet.TagClouds import tagcloudportlet
 
 from qi.portlet.TagClouds.testing import TAGCLOUD_FUNCTIONAL_TESTING
 import unittest
+from plone.app.testing import setRoles
+from plone.app.testing import login
+from plone.app.testing import TEST_USER_ID
+from plone.app.testing import TEST_USER_NAME
 
 
 class TestPortlet(unittest.TestCase):
@@ -26,7 +30,9 @@ class TestPortlet(unittest.TestCase):
         self.assertTrue(True)
 
     def afterSetUp(self):
-        self.setRoles(('Manager', ))
+        portal = self.layer['portal']
+        setRoles(portal, TEST_USER_ID, ['Manager'])
+        login(portal, TEST_USER_NAME)
 
     def test_portlet_type_registered(self):
         portlet = getUtility(

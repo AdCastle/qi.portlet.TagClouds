@@ -4,6 +4,10 @@ from plone.portlets.interfaces import IPortletRenderer
 from qi.portlet.TagClouds import tagcloudportlet
 from qi.portlet.TagClouds.testing import TAGCLOUD_FUNCTIONAL_TESTING
 import unittest
+from plone.app.testing import setRoles
+from plone.app.testing import login
+from plone.app.testing import TEST_USER_ID
+from plone.app.testing import TEST_USER_NAME
 
 
 class TestRenderer(unittest.TestCase):
@@ -20,7 +24,9 @@ class TestRenderer(unittest.TestCase):
     def afterSetUp(self):
         """
         """
-        self.loginAsPortalOwner()
+        portal = self.layer['portal']
+        setRoles(portal, TEST_USER_ID, ['Manager'])
+        login(portal, TEST_USER_NAME)
         # Add a few documents tagged as "tag1" and publish them in
         # member's folder.
         self.portal.invokeFactory('Document', 'tag1_1')
@@ -59,7 +65,9 @@ class TestRenderer(unittest.TestCase):
 
         # Add a private object tagged as "privatetag" created by a normal
         # #member
-        self.login()
+        portal = self.layer['portal']
+        setRoles(portal, TEST_USER_ID, ['Contributer'])
+        login(portal, TEST_USER_NAME)
         self.folder.invokeFactory('Document', 'private2')
         self.folder.private2.editMetadata(subject='memberprivate')
 
@@ -77,7 +85,9 @@ class TestRenderer(unittest.TestCase):
     def test_levels(self):
         """Tests the 'levels' setting
         """
-        self.loginAsPortalOwner()
+        portal = self.layer['portal']
+        setRoles(portal, TEST_USER_ID, ['Manager'])
+        login(portal, TEST_USER_NAME)
         # Setup the portlet so that only one size is used.
         r = self.renderer(context=self.portal,
                           assignment=tagcloudportlet.Assignment(
@@ -102,7 +112,6 @@ class TestRenderer(unittest.TestCase):
         output = r.render()
         self.failUnless('cloud1' in output)
         self.failUnless('cloud3' in output)
-        self.logout()
 
     def test_count(self):
         """Tests the 'count' setting.
@@ -121,13 +130,14 @@ class TestRenderer(unittest.TestCase):
         self.failUnless('tag1' in output)
         self.failUnless('tag2' in output)
         self.failIf('tag3' in output)
-        self.logout()
 
     def test_restrictSubjects(self):
         """Tests the restrictSubjects setting.
         We choose to show only items tagged by 'tag1' and 'tag3'.
         """
-        self.loginAsPortalOwner()
+        portal = self.layer['portal']
+        setRoles(portal, TEST_USER_ID, ['Manager'])
+        login(portal, TEST_USER_NAME)
         r = self.renderer(context=self.portal,
                           assignment=tagcloudportlet.Assignment(
                               restrictSubjects=['tag1', 'tag3'],
@@ -139,14 +149,15 @@ class TestRenderer(unittest.TestCase):
         self.failUnless('tag1' in output)
         self.failUnless('tag3' in output)
         self.failIf('tag2' in output)
-        self.logout()
 
     def test_filterSubjects(self):
         """Tests the filterSubjects setting
         We test by filtering by 'commontag' which should return
         only one item for 'tag1' and 'tag2'
         """
-        self.loginAsPortalOwner()
+        portal = self.layer['portal']
+        setRoles(portal, TEST_USER_ID, ['Manager'])
+        login(portal, TEST_USER_NAME)
         r = self.renderer(context=self.portal,
                           assignment=tagcloudportlet.Assignment(
                               filterSubjects=['commontag'],
@@ -161,7 +172,9 @@ class TestRenderer(unittest.TestCase):
         """Tests the restrictTypes setting.
         We choose to show only 'News item' content.
         """
-        self.loginAsPortalOwner()
+        portal = self.layer['portal']
+        setRoles(portal, TEST_USER_ID, ['Manager'])
+        login(portal, TEST_USER_NAME)
         r = self.renderer(context=self.portal,
                           assignment=tagcloudportlet.Assignment(
                               restrictTypes=['News Item'],
@@ -178,7 +191,9 @@ class TestRenderer(unittest.TestCase):
     def test_root(self):
         """Tests setting the root of the search.
         """
-        self.loginAsPortalOwner()
+        portal = self.layer['portal']
+        setRoles(portal, TEST_USER_ID, ['Manager'])
+        login(portal, TEST_USER_NAME)
         r = self.renderer(context=self.portal,
                           assignment=tagcloudportlet.Assignment(
                               root='/subfolder',
@@ -197,7 +212,9 @@ class TestRenderer(unittest.TestCase):
         Also checks whether view permissions are properly respected
         by the cache mechanism.
         """
-        self.loginAsPortalOwner()
+        portal = self.layer['portal']
+        setRoles(portal, TEST_USER_ID, ['Manager'])
+        login(portal, TEST_USER_NAME)
         r = self.renderer(context=self.portal,
                           assignment=tagcloudportlet.Assignment(
                               wfStates=['published'],
@@ -220,7 +237,9 @@ class TestRenderer(unittest.TestCase):
 
         #Login as a normal member. Should not be able to see private objects
         # from other users.
-        self.login()
+        portal = self.layer['portal']
+        setRoles(portal, TEST_USER_ID, ['Contributor'])
+        login(portal, TEST_USER_NAME)
         r = self.renderer(context=self.portal,
                           assignment=tagcloudportlet.Assignment(
                               wfStates=['private'],
@@ -235,7 +254,9 @@ class TestRenderer(unittest.TestCase):
         """Make sure the parameters specified are also mirrored in the
         search links
         """
-        self.login()
+        portal = self.layer['portal']
+        setRoles(portal, TEST_USER_ID, ['Manager'])
+        login(portal, TEST_USER_NAME)
         r = self.renderer(context=self.portal,
                           assignment=tagcloudportlet.Assignment(
                               wfStates=['private', 'published'],
