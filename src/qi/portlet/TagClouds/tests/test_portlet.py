@@ -67,16 +67,16 @@ class TestPortlet(unittest.TestCase):
 
     def test_invoke_edit_view(self):
         mapping = PortletAssignmentMapping()
-        request = self.folder.REQUEST
+        request = self.portal.REQUEST
 
         mapping['foo'] = tagcloudportlet.Assignment()
         editview = getMultiAdapter((mapping['foo'], request), name='edit')
         self.failUnless(isinstance(editview, tagcloudportlet.EditForm))
 
     def test_obtain_renderer(self):
-        context = self.folder
-        request = self.folder.REQUEST
-        view = self.folder.restrictedTraverse('@@plone')
+        context = self.portal
+        request = self.portal.REQUEST
+        view = self.portal.restrictedTraverse('@@plone')
         manager = getUtility(IPortletManager, name='plone.rightcolumn',
                              context=self.portal)
 
