@@ -47,14 +47,17 @@ class TestPortlet(unittest.TestCase):
         self.failUnless(IPortletDataProvider.providedBy(portlet.data))
 
     def test_invoke_add_view(self):
-        portlet = getUtility(
-            IPortletType,
-            name='qi.portlet.TagClouds.TagCloudPortlet')
+        portal = self.layer['portal']
+        setRoles(portal, TEST_USER_ID, ['Manager'])
+        login(portal, TEST_USER_NAME)
         mapping = self.portal.restrictedTraverse(
             '++contextportlets++plone.leftcolumn')
         for m in mapping.keys():
             del mapping[m]
-        addview = mapping.restrictedTraverse('+/' + portlet.addview)
+        addview = self.portal.\
+            restrictedTraverse('++contextportlets'
+                               '++plone.leftcolumn/+/'
+                               'qi.portlet.TagClouds.TagCloudPortlet')
 
         addview.createAndAdd(data={})
 
