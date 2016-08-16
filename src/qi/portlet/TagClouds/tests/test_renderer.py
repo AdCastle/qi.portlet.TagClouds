@@ -118,7 +118,9 @@ class TestRenderer(unittest.TestCase):
         We choose to show the two most popular tags so only 'tag1' and 'tag2'
         should appear.
         """
-        self.loginAsPortalOwner()
+        portal = self.layer['portal']
+        setRoles(portal, TEST_USER_ID, ['Manager'])
+        login(portal, TEST_USER_NAME)
         r = self.renderer(context=self.portal,
                           assignment=tagcloudportlet.Assignment(
                               count=2,
