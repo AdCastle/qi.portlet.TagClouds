@@ -29,39 +29,39 @@ class TestRenderer(unittest.TestCase):
         login(portal, TEST_USER_NAME)
         # Add a few documents tagged as "tag1" and publish them in
         # member's folder.
-        self.portal.invokeFactory('Document', 'tag1_1')
-        self.portal.tag1_1.editMetadata(subject='tag1')
-        self.portal.portal_workflow.doActionFor(self.portal.tag1_1, 'publish')
-        self.portal.invokeFactory('Document', 'tag1_2')
-        self.portal.tag1_2.editMetadata(subject='tag1')
-        self.portal.portal_workflow.doActionFor(self.portal.tag1_2, 'publish')
-        self.portal.invokeFactory('Document', 'tag1_3')
-        self.portal.tag1_3.editMetadata(subject='tag1')
-        self.portal.portal_workflow.doActionFor(self.portal.tag1_3, 'publish')
-        self.portal.invokeFactory('Document', 'tag1_4')
-        self.portal.tag1_4.editMetadata(subject=['tag1', 'commontag'])
-        self.portal.portal_workflow.doActionFor(self.portal.tag1_4, 'publish')
+        portal.invokeFactory('Document', 'tag1_1')
+        portal.tag1_1.editMetadata(subject='tag1')
+        portal.portal_workflow.doActionFor(portal.tag1_1, 'publish')
+        portal.invokeFactory('Document', 'tag1_2')
+        portal.tag1_2.editMetadata(subject='tag1')
+        portal.portal_workflow.doActionFor(portal.tag1_2, 'publish')
+        portal.invokeFactory('Document', 'tag1_3')
+        portal.tag1_3.editMetadata(subject='tag1')
+        portal.portal_workflow.doActionFor(portal.tag1_3, 'publish')
+        portal.invokeFactory('Document', 'tag1_4')
+        portal.tag1_4.editMetadata(subject=['tag1', 'commontag'])
+        portal.portal_workflow.doActionFor(portal.tag1_4, 'publish')
 
         # Add a few more with tag "tag2" and publish them too.
-        self.portal.invokeFactory('Document', 'tag2_1')
-        self.portal.tag2_1.editMetadata(subject='tag2')
-        self.portal.portal_workflow.doActionFor(self.portal.tag2_1, 'publish')
-        self.portal.invokeFactory('Document', 'tag2_2')
-        self.portal.tag2_2.editMetadata(subject=['tag2', 'commontag'])
-        self.portal.portal_workflow.doActionFor(self.portal.tag2_2, 'publish')
+        portal.invokeFactory('Document', 'tag2_1')
+        portal.tag2_1.editMetadata(subject='tag2')
+        portal.portal_workflow.doActionFor(portal.tag2_1, 'publish')
+        portal.invokeFactory('Document', 'tag2_2')
+        portal.tag2_2.editMetadata(subject=['tag2', 'commontag'])
+        portal.portal_workflow.doActionFor(portal.tag2_2, 'publish')
 
         # And yet another one in a subfolder
-        self.portal.invokeFactory('Folder', 'subfolder')
-        self.portal.portal_workflow.doActionFor(
-            self.portal.subfolder, 'publish')
-        self.portal.subfolder.invokeFactory('News Item', 'tag3_1')
-        self.portal.subfolder.tag3_1.editMetadata(subject='tag3')
-        self.portal.portal_workflow.doActionFor(
-            self.portal.subfolder.tag3_1, 'publish')
+        portal.invokeFactory('Folder', 'subfolder')
+        portal.portal_workflow.doActionFor(
+            portal.subfolder, 'publish')
+        portal.subfolder.invokeFactory('News Item', 'tag3_1')
+        portal.subfolder.tag3_1.editMetadata(subject='tag3')
+        portal.portal_workflow.doActionFor(
+            portal.subfolder.tag3_1, 'publish')
 
         # Add a private object tagged as "privatetag" created by admin
-        self.portal.invokeFactory('Document', 'private1')
-        self.portal.private1.editMetadata(subject='adminprivate')
+        portal.invokeFactory('Document', 'private1')
+        portal.private1.editMetadata(subject='adminprivate')
 
         # Add a private object tagged as "privatetag" created by a normal
         # #member
@@ -89,12 +89,12 @@ class TestRenderer(unittest.TestCase):
         setRoles(portal, TEST_USER_ID, ['Manager'])
         login(portal, TEST_USER_NAME)
         # Setup the portlet so that only one size is used.
-        r = self.renderer(context=self.portal,
+        r = self.renderer(context=portal,
                           assignment=tagcloudportlet.Assignment(
                               levels=1,
                               wfStates=['published', 'private'],
                           ))
-        r = r.__of__(self.portal)
+        r = r.__of__(portal)
         r.update()
         output = r.render()
         self.failUnless('cloud1' in output)
@@ -102,12 +102,12 @@ class TestRenderer(unittest.TestCase):
 
         # Setup the portlet so that there can be
         # up to 3 different tag sizes.
-        r = self.renderer(context=self.portal,
+        r = self.renderer(context=portal,
                           assignment=tagcloudportlet.Assignment(
                               levels=3,
                               wfStates=['published', 'private'],
                           ))
-        r = r.__of__(self.portal)
+        r = r.__of__(portal)
         r.update()
         output = r.render()
         self.failUnless('cloud1' in output)
@@ -121,12 +121,12 @@ class TestRenderer(unittest.TestCase):
         portal = self.layer['portal']
         setRoles(portal, TEST_USER_ID, ['Manager'])
         login(portal, TEST_USER_NAME)
-        r = self.renderer(context=self.portal,
+        r = self.renderer(context=portal,
                           assignment=tagcloudportlet.Assignment(
                               count=2,
                               wfStates=['published', 'private'],
                           ))
-        r = r.__of__(self.portal)
+        r = r.__of__(portal)
         r.update()
         output = r.render()
         self.failUnless('tag1' in output)
@@ -140,12 +140,12 @@ class TestRenderer(unittest.TestCase):
         portal = self.layer['portal']
         setRoles(portal, TEST_USER_ID, ['Manager'])
         login(portal, TEST_USER_NAME)
-        r = self.renderer(context=self.portal,
+        r = self.renderer(context=portal,
                           assignment=tagcloudportlet.Assignment(
                               restrictSubjects=['tag1', 'tag3'],
                               wfStates=['published', 'private'],
                           ))
-        r = r.__of__(self.portal)
+        r = r.__of__(portal)
         r.update()
         output = r.render()
         self.failUnless('tag1' in output)
@@ -160,11 +160,11 @@ class TestRenderer(unittest.TestCase):
         portal = self.layer['portal']
         setRoles(portal, TEST_USER_ID, ['Manager'])
         login(portal, TEST_USER_NAME)
-        r = self.renderer(context=self.portal,
+        r = self.renderer(context=portal,
                           assignment=tagcloudportlet.Assignment(
                               filterSubjects=['commontag'],
                               wfStates=['published'],))
-        r = r.__of__(self.portal)
+        r = r.__of__(portal)
         r.update()
         output = r.render()
         self.failUnless('tag1' in output)
@@ -177,12 +177,12 @@ class TestRenderer(unittest.TestCase):
         portal = self.layer['portal']
         setRoles(portal, TEST_USER_ID, ['Manager'])
         login(portal, TEST_USER_NAME)
-        r = self.renderer(context=self.portal,
+        r = self.renderer(context=portal,
                           assignment=tagcloudportlet.Assignment(
                               restrictTypes=['News Item'],
                               wfStates=['published', 'private'],
                           ))
-        r = r.__of__(self.portal)
+        r = r.__of__(portal)
         r.update()
         output = r.render()
         self.failUnless('tag3' in output)
@@ -196,12 +196,12 @@ class TestRenderer(unittest.TestCase):
         portal = self.layer['portal']
         setRoles(portal, TEST_USER_ID, ['Manager'])
         login(portal, TEST_USER_NAME)
-        r = self.renderer(context=self.portal,
+        r = self.renderer(context=portal,
                           assignment=tagcloudportlet.Assignment(
                               root='/subfolder',
                               wfStates=['published', 'private'],
                           ))
-        r = r.__of__(self.portal)
+        r = r.__of__(portal)
         r.update()
         output = r.render()
         self.failUnless('tag3' in output)
@@ -217,21 +217,21 @@ class TestRenderer(unittest.TestCase):
         portal = self.layer['portal']
         setRoles(portal, TEST_USER_ID, ['Manager'])
         login(portal, TEST_USER_NAME)
-        r = self.renderer(context=self.portal,
+        r = self.renderer(context=portal,
                           assignment=tagcloudportlet.Assignment(
                               wfStates=['published'],
                           ))
-        r = r.__of__(self.portal)
+        r = r.__of__(portal)
         r.update()
         output = r.render()
         self.failIf('adminprivate' in output)
         self.failIf('memberprivate' in output)
 
-        r = self.renderer(context=self.portal,
+        r = self.renderer(context=portal,
                           assignment=tagcloudportlet.Assignment(
                               wfStates=['private'],
                           ))
-        r = r.__of__(self.portal)
+        r = r.__of__(portal)
         r.update()
         output = r.render()
         self.failUnless('adminprivate' in output)
@@ -242,11 +242,11 @@ class TestRenderer(unittest.TestCase):
         portal = self.layer['portal']
         setRoles(portal, TEST_USER_ID, ['Contributor'])
         login(portal, TEST_USER_NAME)
-        r = self.renderer(context=self.portal,
+        r = self.renderer(context=portal,
                           assignment=tagcloudportlet.Assignment(
                               wfStates=['private'],
                           ))
-        r = r.__of__(self.portal)
+        r = r.__of__(portal)
         r.update()
         output = r.render()
         self.failIf('adminprivate' in output)
@@ -259,12 +259,12 @@ class TestRenderer(unittest.TestCase):
         portal = self.layer['portal']
         setRoles(portal, TEST_USER_ID, ['Manager'])
         login(portal, TEST_USER_NAME)
-        r = self.renderer(context=self.portal,
+        r = self.renderer(context=portal,
                           assignment=tagcloudportlet.Assignment(
                               wfStates=['private', 'published'],
                               restrictTypes=['News Item'],
                               root='/subfolder'))
-        r = r.__of__(self.portal)
+        r = r.__of__(portal)
         r.update()
         output = r.render()
         self.failUnless("portal_type%3Alist=News%20Item" in output)
